@@ -16,9 +16,12 @@ class MyProducts extends StatefulWidget{
 }
 
 class _MyProducts extends State<MyProducts>{
-  bool _isSearching = false;
   TextEditingController _searchController = TextEditingController() ;
-  List<Product> _product = [];
+  String _searchQuery = '';
+  List names = [] ;//get from api
+  List namesDisplay = [] ;//filtered by search
+
+  bool _isSearching = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -62,7 +65,7 @@ class _MyProducts extends State<MyProducts>{
       //   setState(() {
       //   _isSearching = true;
       // });
-      updateSearchQuery(query);
+      searchProduct(query);
     } ,
     decoration: InputDecoration(
       hintText: 'Search...',
@@ -74,9 +77,10 @@ class _MyProducts extends State<MyProducts>{
         });  },):null,
     ),
   );
-
-  void updateSearchQuery(String newQuery) {
+  void searchProduct(String query){
+    namesDisplay = names.where((element) => element.startWith(query));
   }
+
 }
 //list product
 class ProductsList extends StatelessWidget{
