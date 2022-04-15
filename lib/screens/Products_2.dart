@@ -1,3 +1,4 @@
+//using call Server
 import 'package:flutter/material.dart';
 import 'package:tiki_project/models/product.dart';
 import 'package:tiki_project/models/api.dart';
@@ -17,10 +18,13 @@ class MyProducts extends StatefulWidget {
 class _MyProducts extends State<MyProducts> {
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
+  late Future<List<Product>> _getProduct ;
 
-  //tạo state query
-  String query = '';
-
+  @override
+  void initState() {
+    _getProduct = getAllProducts();
+    super.initState();
+  }
   @override
   void dispose() {
     // TODO: implement dispose
@@ -49,18 +53,14 @@ class _MyProducts extends State<MyProducts> {
           ],
         ),
         body: FutureBuilder<List<Product>>(
-          future: getAllProducts(),
+          future: _getProduct,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(
                 child: Text('An error has occurred!!!'),
               );
             } else if (snapshot.hasData) {
-              return ProductsList(
-                  //filtered list product
-                  products: snapshot.data!
-                      .where((p) => p.name.contains(query))
-                      .toList());
+              return ProductsList(products: snapshot.data!);
             } else {
               return const Center(
                 child: CircularProgressIndicator(),
@@ -74,11 +74,9 @@ class _MyProducts extends State<MyProducts> {
   Widget _buildSearch() => TextField(
         controller: _searchController,
         onChanged: (query) {
-          //thay this.query bằng query
           setState(() {
             _isSearching = true;
-            this.query = query;
-            // query = query;
+            _getProduct = getProductsbyName(query);
           });
         },
         decoration: InputDecoration(
@@ -90,7 +88,6 @@ class _MyProducts extends State<MyProducts> {
                   onPressed: () {
                     setState(() {
                       _searchController.clear();
-                      this.query = '';
                       _isSearching = false;
                     });
                   },

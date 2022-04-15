@@ -1,12 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:tiki_project/models/product.dart';
+
 Future<List<Product>> getAllProducts() async {
   var response = await http.get(Uri.parse('http://172.29.4.126:30000/products/'));
   // await Future.delayed(const Duration(milliseconds: 500));
 
   if (response.statusCode == 200) {
-    final productList = await json
+    final List<Product>  productList = await json
         .decode(response.body)
         .map<Product>((item) => Product.fromJson(item))
         .toList();
@@ -20,7 +21,7 @@ Future<List<Product>> getAllProducts() async {
 
 Future<Product> getProductById(int productId) async {
   var response =
-      await http.get(Uri.parse('http://172.29.4.126:30000/products/68693081/$productId'));
+      await http.get(Uri.parse('http://172.29.4.126:30000/products/$productId'));
   // await Future.delayed(const Duration(milliseconds: 500));
 
   if (response.statusCode == 200) {
@@ -30,3 +31,21 @@ Future<Product> getProductById(int productId) async {
         'ERROR. Can not get product ${response.statusCode} ${response.body}');
   }
 }
+
+Future<List<Product>> getProductsbyName(String name) async {
+  var response = await http.get(Uri.parse('http://172.29.4.126:30000/products?name_like=$name'));
+  // await Future.delayed(const Duration(milliseconds: 500));
+
+  if (response.statusCode == 200) {
+    final List<Product>  productList = await json
+        .decode(response.body)
+        .map<Product>((item) => Product.fromJson(item))
+        .toList();
+    return productList;
+  } else {
+    throw Exception(
+        'ERROR. Can not get product list ${response.statusCode} ${response.body}');
+  }
+}
+
+
