@@ -1,5 +1,6 @@
 //using call Server
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tiki_project/models/product.dart';
 import 'package:tiki_project/models/api.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -113,75 +114,89 @@ class ProductsList extends StatelessWidget {
       ),
       itemCount: products.length,
       itemBuilder: (context, index) {
-        return Container(
-          height: 500,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            color: Colors.white54,
-          ),
-          child: GestureDetector(
-            onTap: () => Navigator.pushNamed(context, MyDetails.nameRoute,
-                arguments: products[index]),
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AspectRatio(
-                      aspectRatio: 1.5,
-                      child: Image.network(products[index].thumbnailUrl),
-                    ),
-                    Text(
-                      products[index].name,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        RatingBar.builder(
-                          itemSize: 13,
-                          initialRating: products[index].ratingAverage,
-                          direction: Axis.horizontal,
-                          allowHalfRating: true,
-                          itemCount: 5,
-                          ignoreGestures: true,
-                          itemBuilder: (context, _) => const Icon(
-                            Icons.star,
-                            color: Colors.amber,
-                          ),
-                          onRatingUpdate: (rating) {},
-                        ),
-                        Text('(${products[index].reviewCount}) '),
-                        Text(
-                            products[index].quantitySold?.value == null ? '' : '| ${products[index].quantitySold!.text}',
-                            overflow: TextOverflow.ellipsis)
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          '${products[index].price}đ',
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          products[index].discountRate <= 0 ? '' : '-${products[index].discountRate}%',
-                          style: TextStyle(
-                            backgroundColor: Colors.redAccent[100],
-                          ),
-                        )
-                      ],
-                    ),
-                  ],
+        return Consumer<Decorr>(
+          builder: (context,Decorr, child){
+            return Container(
+                height: 500,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    color: Colors.white54,
+                    border: Decorr.borderr,
                 ),
-              ),
-            ),
-          ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, MyDetails.nameRoute, arguments: products[index]);
+                    Decorr.changeborderr();
+                  } ,
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AspectRatio(
+                            aspectRatio: 1.5,
+                            child: Image.network(products[index].thumbnailUrl),
+                          ),
+                          Text(
+                            products[index].name,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              RatingBar.builder(
+                                itemSize: 13,
+                                initialRating: products[index].ratingAverage,
+                                direction: Axis.horizontal,
+                                allowHalfRating: true,
+                                itemCount: 5,
+                                ignoreGestures: true,
+                                itemBuilder: (context, _) => const Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                ),
+                                onRatingUpdate: (rating) {},
+                              ),
+                              Text('(${products[index].reviewCount}) '),
+                              Text(
+                                  products[index].quantitySold?.value == null ? '' : '| ${products[index].quantitySold!.text}',
+                                  overflow: TextOverflow.ellipsis)
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                '${products[index].price}đ',
+                                style: const TextStyle(
+                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                products[index].discountRate <= 0 ? '' : '-${products[index].discountRate}%',
+                                style: TextStyle(
+                                  backgroundColor: Colors.redAccent[100],
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              );
+          },
         );
       },
     );
+  }
+}
+class Decorr extends ChangeNotifier{
+  dynamic borderr;
+  void changeborderr(){
+    borderr =  Border.all(color: Colors.blue);
+    notifyListeners();
   }
 }

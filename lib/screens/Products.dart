@@ -3,6 +3,9 @@ import 'package:tiki_project/models/product.dart';
 import 'package:tiki_project/models/api.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'Details.dart';
+import 'package:intl/intl.dart';
+
+final oCcy = new NumberFormat("#,##0", "en_US");
 
 class MyProducts extends StatefulWidget {
   const MyProducts({Key? key}) : super(key: key);
@@ -112,12 +115,11 @@ class ProductsList extends StatelessWidget {
         crossAxisCount: 2,
         mainAxisSpacing: 5,
         crossAxisSpacing: 5,
-        childAspectRatio: 1 / 1.5,
+        childAspectRatio: 1 / 1.3,
       ),
       itemCount: products.length,
       itemBuilder: (context, index) {
         return Container(
-          height: 500,
           decoration: const BoxDecoration(
             borderRadius: BorderRadius.all(Radius.circular(20)),
             color: Colors.white54,
@@ -129,7 +131,8 @@ class ProductsList extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AspectRatio(
                       aspectRatio: 1.5,
@@ -144,7 +147,7 @@ class ProductsList extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         RatingBar.builder(
-                          itemSize: 13,
+                          itemSize: 12,
                           initialRating: products[index].ratingAverage,
                           direction: Axis.horizontal,
                           allowHalfRating: true,
@@ -156,28 +159,19 @@ class ProductsList extends StatelessWidget {
                           ),
                           onRatingUpdate: (rating) {},
                         ),
-                        Text('(${products[index].reviewCount}) '),
                         Text(
-                            products[index].quantitySold?.value == null ? '' : '| ${products[index].quantitySold!.text}',
+                          '(${products[index].reviewCount}) ',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        Text(
+                            products[index].quantitySold?.value != null
+                                ? '| ${products[index].quantitySold!.text}'
+                                : '',
+                            style: TextStyle(fontSize: 13),
                             overflow: TextOverflow.ellipsis)
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Text(
-                          '${products[index].price}đ',
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          products[index].discountRate <= 0 ? '' : '-${products[index].discountRate}%',
-                          style: TextStyle(
-                            backgroundColor: Colors.redAccent[100],
-                          ),
-                        )
-                      ],
-                    ),
+                    discount_rate(products[index]),
                   ],
                 ),
               ),
@@ -186,5 +180,38 @@ class ProductsList extends StatelessWidget {
         );
       },
     );
+  }
+
+  Widget discount_rate(Product products) {
+    if (products.discountRate > 0) {
+      return Row(
+        children: [
+          Text(
+            '${oCcy.format(products.price)}đ  ',
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+          ),
+          Container(
+            width: 40,
+            height: 20,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.red),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              color: Colors.pink[100],
+            ),
+            child: Center(
+              child: Text(
+                products.discountRate <= 0 ? '' : '-${products.discountRate}%',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else
+      return Text(
+        '${oCcy.format(products.price)}đ  ',
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      );
   }
 }

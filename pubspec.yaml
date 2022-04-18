@@ -27,6 +27,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  provider: ^6.0.2
+  quantity_input: ^1.0.2
   flutter_search_bar: ^2.1.0
   textfield_search: ^0.9.2
   flutter_rating_bar: ^4.0.0
