@@ -85,7 +85,7 @@ class _MyProducts extends State<MyProducts> {
           });
         },
         decoration: InputDecoration(
-          hintText: 'Search...',
+          hintText: 'Search....',
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _isSearching == true
               ? IconButton(

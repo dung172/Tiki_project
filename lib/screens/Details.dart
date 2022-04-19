@@ -32,56 +32,62 @@ class _MyDetails extends State<MyDetails> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.network(products.thumbnailUrl),
-            Text(
-              products.name,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                RatingBar.builder(
-                  itemSize: 20,
-                  initialRating: products.ratingAverage,
-                  direction: Axis.horizontal,
-                  ignoreGestures: true,
-                  allowHalfRating: true,
-                  itemCount: 5,
-                  itemBuilder: (context, _) => const Icon(
-                    Icons.star,
-                    color: Colors.amber,
+            Container(
+              child: Column(
+                children: [
+                  Text(
+                    products.name,
+                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
-                  onRatingUpdate: (rating) {},
-                ),
-                Text(
-                  '(${products.reviewCount})  ${products.quantitySold?.value == null ? '' : '| ${products.quantitySold!.text}'}',
-                  overflow: TextOverflow.ellipsis,
-                ),
-                IconButton(onPressed: () {}, icon: Icon(Icons.add_link)),
-                IconButton(onPressed: () {}, icon: Icon(Icons.share_outlined)),
-              ],
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '${oCcy.format(products.price)}đ ',
-                  style: const TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      RatingBar.builder(
+                        itemSize: 20,
+                        initialRating: products.ratingAverage,
+                        direction: Axis.horizontal,
+                        ignoreGestures: true,
+                        allowHalfRating: true,
+                        itemCount: 5,
+                        itemBuilder: (context, _) => const Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                        ),
+                        onRatingUpdate: (rating) {},
+                      ),
+                      Text(
+                        '(${products.reviewCount})  ${products.quantitySold?.value == null ? '' : '| ${products.quantitySold!.text}'}',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      IconButton(onPressed: () {}, icon: Icon(Icons.add_link)),
+                      IconButton(onPressed: () {}, icon: Icon(Icons.share_outlined)),
+                    ],
                   ),
-                ),
-                Text(
-                  '${products.originalPrice.toString()}đ ',
-                  style: TextStyle(
-                      color: Colors.black45,
-                      decoration: TextDecoration.lineThrough),
-                ),
-                discount_rate(products),
-              ],
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        '${oCcy.format(products.price)}đ ',
+                        style: const TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                      Text(
+                        '${products.originalPrice.toString()}đ ',
+                        style: TextStyle(
+                            color: Colors.black45,
+                            decoration: TextDecoration.lineThrough),
+                      ),
+                      discount_rate(products),
+                    ],
+                  ),
+                ],
+              ),
             ),
             Container(
               margin: const EdgeInsets.all(5),

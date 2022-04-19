@@ -78,15 +78,24 @@ class _FirebaseLoginExampleState extends State<FirebaseLoginExample> {
             },
       child: const Text('Log out'),
     );
-    return Center(
-      child: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 100.0, horizontal: 50.0),
-        children: <Widget>[
-          statusText,
-          googleLoginBtn,
-          anonymousLoginBtn,
-          signOutBtn,
-        ],
+    return MaterialApp(
+      title: 'login',
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('login'),
+        ),
+        body: Center(
+          child: ListView(
+            padding:
+                const EdgeInsets.symmetric(vertical: 100.0, horizontal: 50.0),
+            children: <Widget>[
+              statusText,
+              googleLoginBtn,
+              anonymousLoginBtn,
+              signOutBtn,
+            ],
+          ),
+        ),
       ),
     );
   }
