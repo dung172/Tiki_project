@@ -83,6 +83,7 @@ class _FirebaseLoginExampleState extends State<FirebaseLoginExample> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('login'),
+
         ),
         body: Center(
           child: ListView(
@@ -159,6 +160,9 @@ class _FirebaseLoginExampleState extends State<FirebaseLoginExample> {
         builder: (ctx) => Scaffold(
           appBar: AppBar(
             title: const Text('user profile'),
+            actions: [
+              IconButton(onPressed: ()=>Navigator.pushNamed(context, '/chat',), icon: Icon(Icons.error),),
+            ],
           ),
           body: ListView(
             children: <Widget>[
@@ -184,6 +188,7 @@ class _FirebaseLoginExampleState extends State<FirebaseLoginExample> {
                 title: Text('Creation time: ${user.metadata.creationTime}'),
               ),
               ListTile(title: Text('ProviderData: ${user.providerData}')),
+
             ],
           ),
         ),

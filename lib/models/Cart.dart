@@ -17,7 +17,7 @@ class QuantitySold {
   }
 }
 
-class Product {
+class Cart {
   final int id;
   final String name;
   final String thumbnailUrl;
@@ -28,7 +28,7 @@ class Product {
   final int reviewCount;
   final QuantitySold? quantitySold;
 
-  Product({
+  Cart({
     required this.id,
     required this.name,
     required this.thumbnailUrl,
@@ -40,10 +40,9 @@ class Product {
     this.quantitySold,
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) {
-    // print('Mapping $json');
+  factory Cart.fromMap(Map<String, dynamic> json) {
     try {
-      return Product(
+      return Cart(
         id: json['id'],
         name: json['name'] ?? '',
         thumbnailUrl: json['thumbnail_url'] ?? '',

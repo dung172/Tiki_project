@@ -1,10 +1,12 @@
-//using call Server
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:tiki_project/models/product.dart';
 import 'package:tiki_project/models/api.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'Cart.dart';
 import 'Details.dart';
+import 'package:intl/intl.dart';
+
+final oCcy = new NumberFormat("#,##0", "en_US");
 
 class MyProducts extends StatefulWidget {
   const MyProducts({Key? key}) : super(key: key);
@@ -19,12 +21,13 @@ class MyProducts extends StatefulWidget {
 class _MyProducts extends State<MyProducts> {
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
-  late Future<List<Product>> _getProduct ;
-
-  @override
+  //tạo state query
+  late Future<List<Product>> products;
+@override
   void initState() {
-    _getProduct = getAllProducts();
+    // TODO: implement initState
     super.initState();
+    products = ApiCall().getAllProducts();
   }
   @override
   void dispose() {
@@ -50,11 +53,11 @@ class _MyProducts extends State<MyProducts> {
             ),
           ),
           actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.shopping_cart))
+            IconButton(onPressed: () {Navigator.pushNamed(context, MyCart.nameRoute);}, icon: const Icon(Icons.shopping_cart))
           ],
         ),
         body: FutureBuilder<List<Product>>(
-          future: _getProduct,
+          future: products,
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(
@@ -75,13 +78,15 @@ class _MyProducts extends State<MyProducts> {
   Widget _buildSearch() => TextField(
         controller: _searchController,
         onChanged: (query) {
+          //thay this.query bằng query
           setState(() {
             _isSearching = true;
-            _getProduct = getProductsbyName(query);
+            products = ApiCall().getProductsbyName(query);
+            // query = query;
           });
         },
         decoration: InputDecoration(
-          hintText: 'Search...',
+          hintText: 'Search....',
           prefixIcon: const Icon(Icons.search),
           suffixIcon: _isSearching == true
               ? IconButton(
@@ -90,6 +95,7 @@ class _MyProducts extends State<MyProducts> {
                     setState(() {
                       _searchController.clear();
                       _isSearching = false;
+                      products = ApiCall().getAllProducts();
                     });
                   },
                 )
@@ -110,93 +116,103 @@ class ProductsList extends StatelessWidget {
         crossAxisCount: 2,
         mainAxisSpacing: 5,
         crossAxisSpacing: 5,
-        childAspectRatio: 1 / 1.5,
+        childAspectRatio: 1 / 1.3,
       ),
       itemCount: products.length,
       itemBuilder: (context, index) {
-        return Consumer<Decorr>(
-          builder: (context,Decorr, child){
-            return Container(
-                height: 500,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    color: Colors.white54,
-                    border: Decorr.borderr,
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.pushNamed(context, MyDetails.nameRoute, arguments: products[index]);
-                    Decorr.changeborderr();
-                  } ,
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AspectRatio(
-                            aspectRatio: 1.5,
-                            child: Image.network(products[index].thumbnailUrl),
-                          ),
-                          Text(
-                            products[index].name,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 2,
-                          ),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              RatingBar.builder(
-                                itemSize: 13,
-                                initialRating: products[index].ratingAverage,
-                                direction: Axis.horizontal,
-                                allowHalfRating: true,
-                                itemCount: 5,
-                                ignoreGestures: true,
-                                itemBuilder: (context, _) => const Icon(
-                                  Icons.star,
-                                  color: Colors.amber,
-                                ),
-                                onRatingUpdate: (rating) {},
-                              ),
-                              Text('(${products[index].reviewCount}) '),
-                              Text(
-                                  products[index].quantitySold?.value == null ? '' : '| ${products[index].quantitySold!.text}',
-                                  overflow: TextOverflow.ellipsis)
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(
-                                '${products[index].price}đ',
-                                style: const TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                products[index].discountRate <= 0 ? '' : '-${products[index].discountRate}%',
-                                style: TextStyle(
-                                  backgroundColor: Colors.redAccent[100],
-                                ),
-                              )
-                            ],
-                          ),
-                        ],
-                      ),
+        return Container(
+          decoration: const BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(20)),
+            color: Colors.white54,
+          ),
+          child: GestureDetector(
+            onTap: () => Navigator.pushNamed(context, MyDetails.nameRoute,
+                arguments: products[index]),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 1.5,
+                      child: Image.network(products[index].thumbnailUrl),
                     ),
-                  ),
+                    Text(
+                      products[index].name,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        RatingBar.builder(
+                          itemSize: 12,
+                          initialRating: products[index].ratingAverage,
+                          direction: Axis.horizontal,
+                          allowHalfRating: true,
+                          itemCount: 5,
+                          ignoreGestures: true,
+                          itemBuilder: (context, _) => const Icon(
+                            Icons.star,
+                            color: Colors.amber,
+                          ),
+                          onRatingUpdate: (rating) {},
+                        ),
+                        Text(
+                          '(${products[index].reviewCount}) ',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        Text(
+                            products[index].quantitySold?.value != null
+                                ? '| ${products[index].quantitySold!.text}'
+                                : '',
+                            style: TextStyle(fontSize: 13),
+                            overflow: TextOverflow.ellipsis)
+                      ],
+                    ),
+                    discount_rate(products[index]),
+                  ],
                 ),
-              );
-          },
+              ),
+            ),
+          ),
         );
       },
     );
   }
-}
-class Decorr extends ChangeNotifier{
-  dynamic borderr;
-  void changeborderr(){
-    borderr =  Border.all(color: Colors.blue);
-    notifyListeners();
+
+  Widget discount_rate(Product products) {
+    if (products.discountRate > 0) {
+      return Row(
+        children: [
+          Text(
+            '${oCcy.format(products.price)}đ  ',
+            style: const TextStyle(
+                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+          ),
+          Container(
+            width: 40,
+            height: 20,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.red),
+              borderRadius: const BorderRadius.all(Radius.circular(5)),
+              color: Colors.pink[100],
+            ),
+            child: Center(
+              child: Text(
+                products.discountRate <= 0 ? '' : '-${products.discountRate}%',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else
+      return Text(
+        '${oCcy.format(products.price)}đ  ',
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      );
   }
 }

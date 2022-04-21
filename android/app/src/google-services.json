@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "26051264337",
+    "project_id": "linear-theater-326306",
+    "storage_bucket": "linear-theater-326306.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:26051264337:android:6a50f2a2eb6ed89c035d70",
+        "android_client_info": {
+          "package_name": "com.example.tiki_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "26051264337-gkonbcp8h5fdidaae383d9d9ah909bd0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.tiki_project",
+            "certificate_hash": "4cbde84e1c30a93c8ed43f843fe22fa4f61841ed"
+          }
+        },
+        {
+          "client_id": "26051264337-as6fqbvi69k8jccbf96onfi54ccf08q5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBM77QW7wrCKPfoILTcniIyczrBRgH_BM4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "26051264337-as6fqbvi69k8jccbf96onfi54ccf08q5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

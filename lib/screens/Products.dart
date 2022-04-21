@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tiki_project/models/product.dart';
 import 'package:tiki_project/models/api.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'Cart.dart';
 import 'Details.dart';
 import 'package:intl/intl.dart';
 
@@ -20,7 +21,6 @@ class MyProducts extends StatefulWidget {
 class _MyProducts extends State<MyProducts> {
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
-
   //tạo state query
   String query = '';
 
@@ -48,11 +48,11 @@ class _MyProducts extends State<MyProducts> {
             ),
           ),
           actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.shopping_cart))
+            IconButton(onPressed: () {Navigator.pushNamed(context, MyCart.nameRoute);}, icon: const Icon(Icons.shopping_cart))
           ],
         ),
         body: FutureBuilder<List<Product>>(
-          future: getAllProducts(),
+          future: ApiCall().getAllProducts(),
           builder: (context, snapshot) {
             if (snapshot.hasError) {
               return const Center(
