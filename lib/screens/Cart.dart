@@ -2,9 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tiki_project/models/product.dart';
-import 'package:quantity_input/quantity_input.dart';
+import '../models/Cart_provider.dart';
 import 'Products.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+final oCcy = NumberFormat("#,##0", "en_US");
 
 class MyCart extends StatelessWidget {
   static const nameRoute = '/Cart';
@@ -23,34 +25,47 @@ class MyCart extends StatelessWidget {
             ),
             title: const Text('Giỏ hàng'),
           ),
-          body: const Cart(),
+          body: const CartDetails(),
           bottomNavigationBar: BottomAppBar(
             color: Colors.white,
             child: Container(
               padding: EdgeInsets.fromLTRB(30, 5, 30, 5),
               height: 80,
               decoration: BoxDecoration(
-                  border: Border.all(width: 1, color: Colors.black12)) ,
-              child: Row(
+                  border: Border.all(width: 1, color: Colors.black12)),
+              child: Consumer<CartProvider>(
+                builder: (BuildContext context, _cart, Widget? child) => Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround ,
-                    crossAxisAlignment: CrossAxisAlignment.start ,
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Tổng cộng',style: TextStyle( fontSize: 18),),
-                      Text('2600000đ', style: TextStyle(color: Colors.red, fontSize: 26, fontWeight: FontWeight.bold),),
+                      Text(
+                        'Tổng cộng',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        '${oCcy.format(_cart.getCartTotal()).toString()}đ',
+                        style: TextStyle(
+                            color: Colors.red,
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                   ElevatedButton(
                     onPressed: () {},
-                    child: const Text(
-                      'Chọn mua(2)',
+                    child: Text(
+                      'Chọn mua(${_cart.myCartCount().toString()})',
                       style: TextStyle(fontSize: 20),
                     ),
-                    style: ElevatedButton.styleFrom(primary: Colors.red,fixedSize: Size(180, 50)),
+                    style: ElevatedButton.styleFrom(
+                        primary: Colors.red, fixedSize: Size(180, 50)),
                   ),
                 ],
+              ),
+
               ),
             ),
           ),
@@ -58,87 +73,127 @@ class MyCart extends StatelessWidget {
   }
 }
 
-class Cart extends StatefulWidget {
-  const Cart({Key? key}) : super(key: key);
+class CartDetails extends StatefulWidget {
+  const CartDetails({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
-    return _Cart();
+    return _CartDetails();
   }
 }
 
-class _Cart extends State<Cart> {
-  late bool _isChecked = true;
-  late int _itemCount = 0;
+class _CartDetails extends State<CartDetails> {
+  bool _ischecked = false;
   @override
   Widget build(BuildContext context) {
+    var _cartProvider = Provider.of<CartProvider>(context);
     return Column(
       children: [
         ListTile(
           leading: Checkbox(
-            onChanged: (bool) {},
-            value: _isChecked,
+            onChanged: (bool? value) {
+              setState(() {
+                _ischecked = value!;
+              });
+            },
+            value: _ischecked,
           ),
-          title: Text('Tất cả () sản phẩm'),
+          title: Text('Tất cả (${_cartProvider.cartList.length}) sản phẩm'),
           trailing: IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {},
+            icon: const Icon(Icons.delete),
+            onPressed: () {
+              _cartProvider.clearCart();
+            },
           ),
         ),
         const Divider(),
         Expanded(
             child: ListView.separated(
-          itemCount: 10,
+          itemCount: _cartProvider.cartList.length,
           separatorBuilder: (context, index) => const Divider(),
-          itemBuilder: (context, index) => ListTile(
-            leading: Checkbox(
-              onChanged: (bool) { },
-              value: _isChecked,
-            ),
-            title: Row(
+          itemBuilder: (context, index) => Container(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Expanded(
-                  child: Image.network(
-                      'https://salt.tikicdn.com/cache/280x280/ts/product/19/5e/21/e9545516e51437aa3266c8a684c83f1d.jpg'),
+                Checkbox(
+                  onChanged: (bool) {
+
+                  },
+                  value: true,
                 ),
-                Column(
-                  children: [
-                    Text('Renf luye tu duy phan vien'),
-                    Text('240000đ',style: TextStyle(color: Colors.red),),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                SizedBox(
+                  width: 100,
+                  height: 150,
+                  child:
+                      Image.network(_cartProvider.cartList[index].thumbnailUrl),
+                ),
+                Flexible(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
                       children: [
-                        Container(
-                          height: 30,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(width: 1,color: Colors.black12)),
-                          child: Row(
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.remove),
-                                iconSize: 14,
-                                onPressed: () => setState(() {
-                                  _itemCount--;
-                                  if (_itemCount < 0) _itemCount = 0;
-                                }),
-                              ),
-                              Text(_itemCount.toString()),
-                              IconButton(
-                                  icon: Icon(Icons.add),
-                                  iconSize: 14,
-                                  onPressed: () => setState(() => _itemCount++))
-                            ],
-                          ),
+                        Text(
+                          _cartProvider.cartList[index].name,
+                          style: TextStyle(fontSize: 16),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 4,
                         ),
-                        TextButton(
-                          onPressed: () {},
-                          child: Text('xóa'),
+                        Row(
+                          children: [
+                            Text(
+                              '${oCcy.format(_cartProvider.cartList[index].price).toString()}đ',
+                              style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: Text(
+                                '${oCcy.format(_cartProvider.cartList[index].originalPrice)
+                                    .toString()}đ',style: TextStyle(decoration: TextDecoration.lineThrough, color: Colors.grey),
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              height: 30,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(5),
+                                  border: Border.all(
+                                      width: 1, color: Colors.black12)),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.remove),
+                                    iconSize: 14,
+                                    onPressed: () => _cartProvider.sub(_cartProvider.cartList[index]),
+                                  ),
+                                  Text(_cartProvider.cartList[index].quantity
+                                      .toString()),
+                                  IconButton(
+                                      icon: Icon(Icons.add),
+                                      iconSize: 14,
+                                      onPressed: () =>_cartProvider.add(_cartProvider.cartList[index]))
+                                ],
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                print(_cartProvider.cartList[index].id);
+                                _cartProvider.removeItem(_cartProvider.cartList[index].id);
+                              },
+                              child: Text('xóa'),
+                            )
+                          ],
                         )
                       ],
-                    )
-                  ],
-                )
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

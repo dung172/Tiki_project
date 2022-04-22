@@ -27,9 +27,7 @@ class _MyProducts extends State<MyProducts> {
   late int _itemsperpage = 40;
   late int _page = 1;
   late List<Product> productList = [];
-  late List<Product> historylistp = [];
   Timer? _debounce;
-
   @override
   void initState() {
     // TODO: implement initState
@@ -40,8 +38,17 @@ class _MyProducts extends State<MyProducts> {
           _scrollController.position.maxScrollExtent) {
         setState(() {
           _isLoading = true;
+          _itemsperpage = 20;
+          _page++;
         });
-        _loadmore();
+        _loadmore(name: _searchController.text);
+      }
+    });
+    _searchController.addListener(() {
+      if(_searchController.text.isEmpty){
+        setState(() {
+          initState();
+        });
       }
     });
 
@@ -62,11 +69,9 @@ class _MyProducts extends State<MyProducts> {
         setState(() {
           _isLoading = false;
           productList.addAll(fetchedList);
-          if(_searchController.text.isEmpty){
-            historylistp = productList;
-          }
-          _itemsperpage = 20;
-          _page++;
+          // if(_searchController.text.isEmpty){
+          //   historylistp = productList;
+          // }
           print('====== _loadmore done, and printing ${fetchedList.length} products');
         });
       }
@@ -79,6 +84,7 @@ class _MyProducts extends State<MyProducts> {
     super.dispose();
     _searchController.dispose();
     _scrollController.dispose();
+    _debounce?.cancel();
   }
 
   @override
@@ -100,16 +106,14 @@ class _MyProducts extends State<MyProducts> {
               controller: _searchController,
               onChanged: (query) {
                 setState(() {
-
                   if (_debounce?.isActive ?? false) _debounce?.cancel();
                   _debounce = Timer(const Duration(milliseconds: 500), () {
                     _isSearching = true;
-                    // listp = [];
+                    productList.clear();
                     _page=1;
+                    _loadmore(name: query);
                   });
-                  _loadmore(name: _searchController.text);
                   });
-
               },
               decoration: InputDecoration(
                 hintText: 'Search....',
@@ -119,8 +123,11 @@ class _MyProducts extends State<MyProducts> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           setState(() {
-                            _searchController.clear();
+                            _searchController.text='';
                             _isSearching = false;
+                            productList.clear();
+                            _page = 1;
+                            _loadmore();
                           });
                         },
                       )
@@ -146,7 +153,7 @@ class _MyProducts extends State<MyProducts> {
           childAspectRatio: 1 / 1.3,
         ),
         // itemCount:  _isLoading?listp.length+1:listp.length,
-        itemCount: productList.length+1,
+        itemCount: _isLoading?productList.length+1:productList.length,
         itemBuilder: (context, index) {
           // if(index >= listp.length )
           if (index>=productList.length) {

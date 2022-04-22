@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:tiki_project/models/product.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
+
+import '../models/Cart_provider.dart';
+import 'Cart.dart';
 
 final oCcy = new NumberFormat("#,##0", "en_US");
 
@@ -94,7 +98,10 @@ class _MyDetails extends State<MyDetails> {
               width: double.infinity,
               height: 60,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Provider.of<CartProvider>(context, listen: false).addItemToCart(products.id, products.name, products.thumbnailUrl, products.price, products.originalPrice);
+                  Navigator.pushNamed(context, MyCart.nameRoute);
+                },
                 child: const Text(
                   'Chọn mua',
                   style: TextStyle(fontSize: 20),
