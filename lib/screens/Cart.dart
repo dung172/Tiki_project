@@ -1,20 +1,22 @@
 import 'dart:ui';
-
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../models/Cart_provider.dart';
+import 'package:tiki_project/models/Cart_provider.dart';
+import '../models/api.dart';
 import 'Products.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 final oCcy = NumberFormat("#,##0", "en_US");
 
+
 class MyCart extends StatelessWidget {
   static const nameRoute = '/Cart';
-
   const MyCart({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+     Future<String> _postcart;
     return MaterialApp(
         title: 'Cart',
         home: Scaffold(
@@ -55,7 +57,9 @@ class MyCart extends StatelessWidget {
                     ],
                   ),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                        _postcart = ApiCall().postCart(_cart.cartList);
+                    },
                     child: Text(
                       'Chọn mua(${_cart.myCartCount().toString()})',
                       style: TextStyle(fontSize: 20),
@@ -77,7 +81,6 @@ class CartDetails extends StatefulWidget {
   const CartDetails({
     Key? key,
   }) : super(key: key);
-
   @override
   State<StatefulWidget> createState() {
     return _CartDetails();
@@ -86,6 +89,8 @@ class CartDetails extends StatefulWidget {
 
 class _CartDetails extends State<CartDetails> {
   bool _ischecked = false;
+  late FirebaseMessaging messaging;
+
   @override
   Widget build(BuildContext context) {
     var _cartProvider = Provider.of<CartProvider>(context);

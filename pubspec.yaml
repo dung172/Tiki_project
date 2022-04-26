@@ -29,6 +29,10 @@ environment:
 dependencies:
   english_words: ^4.0.0
   firebase_database: any
+  firebase_messaging: ^11.2.4
+  flutter_local_notifications: ^9.4.1
+  cloud_firestore: any
+  overlay_support: any
   firebase_core: any
   google_sign_in: ^5.3.0
   firebase_auth: any

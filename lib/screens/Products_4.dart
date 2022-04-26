@@ -24,7 +24,7 @@ class _MyProducts extends State<MyProducts> {
   final ScrollController _scrollController = ScrollController();
   bool _isSearching = false;
   bool _isLoading = false;
-  late int _itemsperpage = 40;
+  late int _itemsPerPage = 40;
   late int _page = 1;
   late List<Product> productList = [];
   Timer? _debounce;
@@ -32,16 +32,16 @@ class _MyProducts extends State<MyProducts> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _loadmore();
+    _loadMore();
     _scrollController.addListener(() {
       if (_scrollController.position.pixels ==
           _scrollController.position.maxScrollExtent) {
         setState(() {
           _isLoading = true;
-          _itemsperpage = 20;
+          _itemsPerPage = 20;
           _page++;
         });
-        _loadmore(name: _searchController.text);
+        _loadMore(name: _searchController.text);
       }
     });
     _searchController.addListener(() {
@@ -54,16 +54,16 @@ class _MyProducts extends State<MyProducts> {
 
   }
 
-  void _loadmore({String name = ''}) {
-    print('_loadmore called with param [$name]');
+  void _loadMore({String name = ''}) {
+    //print('_loadmore called with param [$name]');
     // _isLoading = true;
     ApiCall()
-        .getProductsperpage(_page, _itemsperpage, name: name)
+        .getProductsperpage(_page, _itemsPerPage, name: name)
         .then((List<Product> fetchedList) {
       if (fetchedList.isEmpty) {
         setState(() {
           _isLoading = false;
-          print('====== _loadmore done, and printing 0 products, name: $name, page: $_page');
+          //print('====== _loadmore done, and printing 0 products, name: $name, page: $_page');
         });
       } else {
         setState(() {
@@ -72,7 +72,7 @@ class _MyProducts extends State<MyProducts> {
           // if(_searchController.text.isEmpty){
           //   historylistp = productList;
           // }
-          print('====== _loadmore done, and printing ${fetchedList.length} products');
+          //print('====== _loadmore done, and printing ${fetchedList.length} products');
         });
       }
     });
@@ -89,7 +89,7 @@ class _MyProducts extends State<MyProducts> {
 
   @override
   Widget build(BuildContext context) {
-    print('Renderingggggggggggggggggggg');
+    //print('Renderingggggggggggggggggggg');
 
     return Scaffold(
       appBar: AppBar(
@@ -111,7 +111,7 @@ class _MyProducts extends State<MyProducts> {
                     _isSearching = true;
                     productList.clear();
                     _page=1;
-                    _loadmore(name: query);
+                    _loadMore(name: query);
                   });
                   });
               },
@@ -127,7 +127,7 @@ class _MyProducts extends State<MyProducts> {
                             _isSearching = false;
                             productList.clear();
                             _page = 1;
-                            _loadmore();
+                            _loadMore();
                           });
                         },
                       )
@@ -152,7 +152,6 @@ class _MyProducts extends State<MyProducts> {
           crossAxisSpacing: 5,
           childAspectRatio: 1 / 1.3,
         ),
-        // itemCount:  _isLoading?listp.length+1:listp.length,
         itemCount: _isLoading?productList.length+1:productList.length,
         itemBuilder: (context, index) {
           // if(index >= listp.length )

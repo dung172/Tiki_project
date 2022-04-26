@@ -21,28 +21,26 @@ class MyProducts extends StatefulWidget {
 class _MyProducts extends State<MyProducts> {
   bool _isSearching = false;
   bool _isLoading = false;
-  late int _itemsperpage =40;
+  late int _itemsPerPage =40;
   late int _page =1;
-  bool _hasmore =true;
+  bool _hasMore =true;
   final TextEditingController _searchController = TextEditingController();
   List<Product> products = [];
   @override
   void initState() {
     super.initState();
     _isLoading = true;
-    _hasmore = true;
-    _loadmore();
+    _hasMore = true;
+    _loadMore();
   }
 
-  void _loadmore({String name=''}){
-    print(_page);
-    print(_itemsperpage);
+  void _loadMore({String name=''}){
     _isLoading = true;
-    ApiCall().getProductsperpage(_page, _itemsperpage, name: name).then((List<Product> fetchedList) {
+    ApiCall().getProductsperpage(_page, _itemsPerPage, name: name).then((List<Product> fetchedList) {
       if (fetchedList.isEmpty) {
         setState(() {
           _isLoading = false;
-          _hasmore = false;
+          _hasMore = false;
         });
       } else {
         setState(() {
@@ -51,7 +49,7 @@ class _MyProducts extends State<MyProducts> {
         });
       }
     });
-    _itemsperpage=20;
+    _itemsPerPage=20;
     _page++;
   }
 
@@ -93,11 +91,11 @@ class _MyProducts extends State<MyProducts> {
         crossAxisSpacing: 5,
         childAspectRatio: 1 / 1.3,
       ),
-      itemCount:  _hasmore?products.length +1:products.length,
+      itemCount:  _hasMore?products.length +1:products.length,
       itemBuilder: (context, index) {
         if (index >= products.length) {
           if (!_isLoading) {
-            _loadmore();
+            _loadMore();
           }
           return const Center(
             child: SizedBox(
@@ -121,7 +119,7 @@ class _MyProducts extends State<MyProducts> {
       //thay this.query bằng query
       setState(() {
         _isSearching = true;
-        _loadmore(name:query);
+        _loadMore(name:query);
         // query = query;
       });
     },

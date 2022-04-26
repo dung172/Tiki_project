@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -8,9 +9,11 @@ import 'package:tiki_project/screens/Details.dart';
 import 'screens/Cart.dart';
 import 'firebase_chatroom.dart';
 import 'firebase.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   runApp(const MyTiki());
 }
 // void main() {
