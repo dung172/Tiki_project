@@ -47,7 +47,7 @@ class ApiCall {
     }
   }
 
-  Future<String> postCart(List<CartItem> cart) async {
+  Future<dynamic> postCart(List<CartItem> cart) async {
     var body = {
       "request_time": DateFormat('yyyy/MM/dd kk:mm:ss').format(DateTime.now()),
       "item": cart.map((e) => e.toJson()).toList(),
@@ -59,15 +59,7 @@ class ApiCall {
       },
       body: jsonEncode(body),
     );
-    if (response.statusCode == 200) {
-      // print('productList: $productList');
-      print(jsonEncode(body));
-      return jsonEncode(body);
-    } else {
-      throw Exception(
-          'ERROR. Can not get product list ${response.statusCode} ${response.body}');
-      print('error');
-    }
+    return response;
   }
 
   Future<Product> getProductById(int productId) async {

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:tiki_project/models/product.dart';
-import 'dart:convert';
 
 class CartItem {
   final int id;

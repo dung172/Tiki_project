@@ -16,14 +16,13 @@ class MyCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     Future<String> _postcart;
     return MaterialApp(
         title: 'Cart',
         home: Scaffold(
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context, MyProducts.nameRoute),
+              onPressed: () => Navigator.pushNamed(context, MyProducts.nameRoute),
             ),
             title: const Text('Giỏ hàng'),
           ),
@@ -58,7 +57,19 @@ class MyCart extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                        _postcart = ApiCall().postCart(_cart.cartList);
+                        ApiCall().postCart(_cart.cartList).then((response){
+                          if (response.statusCode == 201) {
+                            final snackBar = SnackBar(
+                              content: Text('đặt hàng thành công!!!!!'),
+                              duration: Duration(seconds: 2),//default is 4s
+                            );
+                            // Find the Scaffold in the widget tree and use it to show a SnackBar.
+                            Scaffold.of(context).showSnackBar(snackBar);
+                          } else {
+                            throw Exception(
+                                'ERROR. Can not get product list ${response.statusCode} ');
+                          }
+                        });
                     },
                     child: Text(
                       'Chọn mua(${_cart.myCartCount().toString()})',
@@ -124,10 +135,12 @@ class _CartDetails extends State<CartDetails> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Checkbox(
-                  onChanged: (bool) {
-
+                  value: false,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      value = value!;
+                    });
                   },
-                  value: true,
                 ),
                 SizedBox(
                   width: 100,

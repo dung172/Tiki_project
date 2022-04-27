@@ -52,11 +52,13 @@ class MyTiki extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Tiki',
-        initialRoute: MyProducts.nameRoute,
+        initialRoute: '/login',
         routes: {
           MyProducts.nameRoute: (_) => MyProducts(),
           MyDetails.nameRoute: (_) => MyDetails(),
           MyCart.nameRoute: (_) => MyCart(),
+       '/login': (_)=>FirebaseLoginExample(),
+          '/chat':(_)=>FirebaseChatroomExample(),
         },
       ),
 
