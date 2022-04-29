@@ -1,4 +1,3 @@
-
 class QuantitySold {
   final String text;
   final int value;
@@ -7,6 +6,7 @@ class QuantitySold {
     required this.text,
     required this.value,
   });
+
   factory QuantitySold.fromJson(Map<String, dynamic> json) {
     // print('parse QuantitySold from $json');
     return QuantitySold(
@@ -66,5 +66,3 @@ class Product {
     return 'Product {id: $id, name: $name, price: $price, discountRate: $discountRate}';
   }
 }
-
-

@@ -50,7 +50,6 @@ class CartProvider extends ChangeNotifier {
     int count = 0;
     for (var item in _cartList.where((p) => p.ischecked == true).toList()) {
       count += item.quantity;
-      print(item.name);
     }
     return count;
   }
@@ -85,7 +84,6 @@ class CartProvider extends ChangeNotifier {
           originalPrice: originalPrice,
           quantity: 1,
           ischecked: true));
-      print('add $name');
     }
     notifyListeners();
   }

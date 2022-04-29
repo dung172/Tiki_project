@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tiki_project/models/product.dart';
@@ -50,7 +49,8 @@ class _MyDetails extends State<MyDetails> {
               children: [
                 Text(
                   products.name,
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w600),
                 ),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -72,8 +72,11 @@ class _MyDetails extends State<MyDetails> {
                       '(${products.reviewCount})  ${products.quantitySold?.value == null ? '' : '| ${products.quantitySold!.text}'}',
                       overflow: TextOverflow.ellipsis,
                     ),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.add_link)),
-                    IconButton(onPressed: () {}, icon: const Icon(Icons.share_outlined)),
+                    IconButton(
+                        onPressed: () {}, icon: const Icon(Icons.add_link)),
+                    IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.share_outlined)),
                   ],
                 ),
                 Row(
@@ -89,11 +92,38 @@ class _MyDetails extends State<MyDetails> {
                     Text(
                       '${oCcy.format(products.originalPrice)}đ',
                       style: const TextStyle(
-                          color: Colors.black45, fontSize: 18,
+                          color: Colors.black45,
+                          fontSize: 18,
                           decoration: TextDecoration.lineThrough),
                     ),
                     const Spacer(),
-                    discount_rate(products),
+                    products.discountRate == 0
+                        ? Container()
+                        : Row(
+                            children: [
+                              Container(
+                                width: 50,
+                                height: 30,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.red,
+                                  ),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(5)),
+                                  color: Colors.pink[100],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    products.discountRate <= 0
+                                        ? ''
+                                        : '-${products.discountRate}%',
+                                    style: const TextStyle(
+                                        color: Colors.red, fontSize: 18),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                   ],
                 ),
               ],
@@ -104,7 +134,13 @@ class _MyDetails extends State<MyDetails> {
               height: 60,
               child: ElevatedButton(
                 onPressed: () {
-                  Provider.of<CartProvider>(context, listen: false).addItemToCart(products.id, products.name, products.thumbnailUrl, products.price, products.originalPrice);
+                  Provider.of<CartProvider>(context, listen: false)
+                      .addItemToCart(
+                          products.id,
+                          products.name,
+                          products.thumbnailUrl,
+                          products.price,
+                          products.originalPrice);
                   Navigator.popAndPushNamed(context, MyCart.nameRoute);
                 },
                 child: const Text(
@@ -118,27 +154,5 @@ class _MyDetails extends State<MyDetails> {
         ),
       ),
     );
-  }
-
-  Widget discount_rate(Product products) {
-    if (products.discountRate > 0) {
-      return Container(
-        width: 50,
-        height: 30,
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.red),
-          borderRadius: const BorderRadius.all(Radius.circular(5)),
-          color: Colors.pink[100],
-        ),
-        child: Center(
-          child: Text(
-            '-${products.discountRate}%',
-            style: const TextStyle(color: Colors.red,fontSize: 18),
-          ),
-        ),
-      );
-    } else {
-      return Container();
-    }
   }
 }

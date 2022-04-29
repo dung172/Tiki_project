@@ -111,9 +111,7 @@ class _CartDetails extends State<CartDetails> {
         ListTile(
           leading: Checkbox(
             onChanged: (bool? value) {
-              setState(() {
                 _cartProvider.allischecked = value!;
-              });
               for (var item in _cartProvider.cartList) {
                 item.ischecked = _cartProvider.allischecked;
               }
@@ -128,7 +126,7 @@ class _CartDetails extends State<CartDetails> {
                 showDialog<String>(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
-                    content: const Text('bạn có chắc muốn xóa?'),
+                    content: const Text('bạn có chắc muốn xóa toàn bộ giỏ hàng?'),
                     actions: <Widget>[
                       TextButton(
                         onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -160,11 +158,11 @@ class _CartDetails extends State<CartDetails> {
               Checkbox(
                 value: _cartProvider.cartList[index].ischecked,
                 onChanged: (bool? value) {
-                    _cartProvider.checkitem(_cartProvider.cartList[index], value!);
-                    if(_cartProvider.cartList[index].ischecked == false)
-                      {
-                        _cartProvider.allischecked = false;
-                      }
+                  _cartProvider.checkitem(
+                      _cartProvider.cartList[index], value!);
+                  if (_cartProvider.cartList[index].ischecked == false) {
+                    _cartProvider.allischecked = false;
+                  }
                 },
               ),
               SizedBox(

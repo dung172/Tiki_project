@@ -31,8 +31,6 @@ class ApiCall {
     var response = await http.get(Uri.parse(url));
     await Future.delayed(const Duration(milliseconds: 500));
 
-    print('Get product, url: $url');
-
     if (response.statusCode == 200) {
       final List<Product> productList = await json
           .decode(response.body)
