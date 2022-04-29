@@ -1,6 +1,8 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:tiki_project/models/Cart_provider.dart';
+import 'package:tiki_project/screens/Details.dart';
+import 'package:tiki_project/screens/Products.dart';
 import '../models/api.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -55,11 +57,7 @@ class MyCart extends StatelessWidget {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        ApiCall()
-                            .postCart(_cart.cartList
-                                .where((p) => p.ischecked == true)
-                                .toList())
-                            .then((response) {
+                        ApiCall().postCart(_cart.cartList).then((response) {
                           if (response.statusCode == 201) {
                             const snackBar = SnackBar(
                               content: Text('đặt hàng thành công!!!!!'),
@@ -101,6 +99,7 @@ class CartDetails extends StatefulWidget {
 }
 
 class _CartDetails extends State<CartDetails> {
+  bool _ischecked = false;
   late FirebaseMessaging messaging;
 
   @override
@@ -112,19 +111,16 @@ class _CartDetails extends State<CartDetails> {
           leading: Checkbox(
             onChanged: (bool? value) {
               setState(() {
-                _cartProvider.allischecked = value!;
+                _ischecked = value!;
               });
-              for (var item in _cartProvider.cartList) {
-                item.ischecked = _cartProvider.allischecked;
-              }
             },
-            value: _cartProvider.allischecked,
+            value: _ischecked,
           ),
           title: Text('Tất cả (${_cartProvider.cartList.length}) sản phẩm'),
           trailing: IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
-              if (_cartProvider.cartList.isNotEmpty) {
+              if(_cartProvider.cartList.isNotEmpty){
                 showDialog<String>(
                   context: context,
                   builder: (BuildContext context) => AlertDialog(
@@ -151,103 +147,101 @@ class _CartDetails extends State<CartDetails> {
         const Divider(),
         Expanded(
             child: ListView.separated(
-          itemCount: _cartProvider.cartList.length,
-          separatorBuilder: (context, index) => const Divider(),
-          itemBuilder: (context, index) => Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Checkbox(
-                value: _cartProvider.cartList[index].ischecked,
-                onChanged: (bool? value) {
-                    _cartProvider.checkitem(_cartProvider.cartList[index], value!);
-                    if(_cartProvider.cartList[index].ischecked == false)
-                      {
-                        _cartProvider.allischecked = false;
-                      }
-                },
-              ),
-              SizedBox(
-                width: 100,
-                height: 150,
-                child:
+              itemCount: _cartProvider.cartList.length,
+              separatorBuilder: (context, index) => const Divider(),
+              itemBuilder: (context, index) => Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Checkbox(
+                    value: false,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        value = value!;
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    width: 100,
+                    height: 150,
+                    child:
                     Image.network(_cartProvider.cartList[index].thumbnailUrl),
-              ),
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Column(
-                    children: [
-                      Text(
-                        _cartProvider.cartList[index].name,
-                        style: const TextStyle(fontSize: 16),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 4,
-                      ),
-                      Row(
+                  ),
+                  Flexible(
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
                         children: [
                           Text(
-                            '${oCcy.format(_cartProvider.cartList[index].price).toString()}đ',
-                            style: const TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16),
+                            _cartProvider.cartList[index].name,
+                            style: const TextStyle(fontSize: 16),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 4,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10),
-                            child: Text(
-                              '${oCcy.format(_cartProvider.cartList[index].originalPrice).toString()}đ',
-                              style: const TextStyle(
-                                  decoration: TextDecoration.lineThrough,
-                                  color: Colors.grey),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Container(
-                            height: 30,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5),
-                                border: Border.all(
-                                    width: 1, color: Colors.black12)),
-                            child: Row(
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove),
-                                  iconSize: 14,
-                                  onPressed: () => _cartProvider
-                                      .sub(_cartProvider.cartList[index]),
+                          Row(
+                            children: [
+                              Text(
+                                '${oCcy.format(_cartProvider.cartList[index].price).toString()}đ',
+                                style: const TextStyle(
+                                    color: Colors.red,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: Text(
+                                  '${oCcy.format(_cartProvider.cartList[index].originalPrice).toString()}đ',
+                                  style: const TextStyle(
+                                      decoration: TextDecoration.lineThrough,
+                                      color: Colors.grey),
                                 ),
-                                Text(_cartProvider.cartList[index].quantity
-                                    .toString()),
-                                IconButton(
-                                    icon: const Icon(Icons.add),
-                                    iconSize: 14,
-                                    onPressed: () => _cartProvider
-                                        .add(_cartProvider.cartList[index]))
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          TextButton(
-                            onPressed: () {
-                              print(_cartProvider.cartList[index].id);
-                              _cartProvider
-                                  .removeItem(_cartProvider.cartList[index].id);
-                            },
-                            child: const Text('xóa'),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                height: 30,
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                        width: 1, color: Colors.black12)),
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                      icon: const Icon(Icons.remove),
+                                      iconSize: 14,
+                                      onPressed: () => _cartProvider
+                                          .sub(_cartProvider.cartList[index]),
+                                    ),
+                                    Text(_cartProvider.cartList[index].quantity
+                                        .toString()),
+                                    IconButton(
+                                        icon: const Icon(Icons.add),
+                                        iconSize: 14,
+                                        onPressed: () => _cartProvider
+                                            .add(_cartProvider.cartList[index]))
+                                  ],
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  print(_cartProvider.cartList[index].id);
+                                  _cartProvider
+                                      .removeItem(_cartProvider.cartList[index].id);
+                                },
+                                child: const Text('xóa'),
+                              )
+                            ],
                           )
                         ],
-                      )
-                    ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
-        )),
+            )),
       ],
     );
   }

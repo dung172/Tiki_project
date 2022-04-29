@@ -28,6 +28,7 @@ class _MyProducts extends State<MyProducts> {
   late int _page = 1;
   late List<Product> productList = [];
   Timer? _debounce;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -45,13 +46,12 @@ class _MyProducts extends State<MyProducts> {
       }
     });
     _searchController.addListener(() {
-      if(_searchController.text.isEmpty){
+      if (_searchController.text.isEmpty) {
         setState(() {
           initState();
         });
       }
     });
-
   }
 
   void _loadMore({String name = ''}) {
@@ -69,9 +69,6 @@ class _MyProducts extends State<MyProducts> {
         setState(() {
           _isLoading = false;
           productList.addAll(fetchedList);
-          // if(_searchController.text.isEmpty){
-          //   historylistp = productList;
-          // }
           //print('====== _loadmore done, and printing ${fetchedList.length} products');
         });
       }
@@ -105,15 +102,15 @@ class _MyProducts extends State<MyProducts> {
             child: TextField(
               controller: _searchController,
               onChanged: (query) {
-                setState(() {
-                  if (_debounce?.isActive ?? false) _debounce?.cancel();
-                  _debounce = Timer(const Duration(milliseconds: 500), () {
+                if (_debounce?.isActive ?? false) _debounce?.cancel();
+                _debounce = Timer(const Duration(milliseconds: 500), () {
+                  setState(() {
                     _isSearching = true;
                     productList.clear();
-                    _page=1;
+                    _page = 1;
                     _loadMore(name: query);
                   });
-                  });
+                });
               },
               decoration: InputDecoration(
                 hintText: 'Search....',
@@ -123,7 +120,7 @@ class _MyProducts extends State<MyProducts> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           setState(() {
-                            _searchController.text='';
+                            _searchController.text = '';
                             _isSearching = false;
                             productList.clear();
                             _page = 1;
@@ -152,10 +149,9 @@ class _MyProducts extends State<MyProducts> {
           crossAxisSpacing: 5,
           childAspectRatio: 1 / 1.3,
         ),
-        itemCount: _isLoading?productList.length+1:productList.length,
+        itemCount: _isLoading ? productList.length + 1 : productList.length,
         itemBuilder: (context, index) {
-          // if(index >= listp.length )
-          if (index>=productList.length) {
+          if (index >= productList.length) {
             return const Center(
               child: CircularProgressIndicator(),
             );
@@ -167,6 +163,7 @@ class _MyProducts extends State<MyProducts> {
     );
   }
 }
+
 //list product
 class ProductItem extends StatelessWidget {
   const ProductItem({Key? key, required this.product}) : super(key: key);
@@ -226,46 +223,46 @@ class ProductItem extends StatelessWidget {
                         overflow: TextOverflow.ellipsis)
                   ],
                 ),
-                discountRate(product),
+                product.discountRate == 0
+                    ? Text(
+                        '${oCcy.format(product.price)}đ  ',
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      )
+                    : Row(
+                        children: [
+                          Text(
+                            '${oCcy.format(product.price)}đ  ',
+                            style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red),
+                          ),
+                          Container(
+                            width: 40,
+                            height: 20,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.red),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(5)),
+                              color: Colors.pink[100],
+                            ),
+                            child: Center(
+                              child: Text(
+                                product.discountRate <= 0
+                                    ? ''
+                                    : '-${product.discountRate}%',
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  Widget discountRate(Product products) {
-    if (products.discountRate > 0) {
-      return Row(
-        children: [
-          Text(
-            '${oCcy.format(products.price)}đ  ',
-            style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
-          ),
-          Container(
-            width: 40,
-            height: 20,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.red),
-              borderRadius: const BorderRadius.all(Radius.circular(5)),
-              color: Colors.pink[100],
-            ),
-            child: Center(
-              child: Text(
-                products.discountRate <= 0 ? '' : '-${products.discountRate}%',
-                style: const TextStyle(color: Colors.red),
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
-      return Text(
-        '${oCcy.format(products.price)}đ  ',
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      );
-    }
   }
 }

@@ -8,11 +8,11 @@ import 'package:intl/intl.dart';
 import '../models/Cart_provider.dart';
 import 'Cart.dart';
 
-final oCcy = new NumberFormat("#,##0", "en_US");
+final oCcy = NumberFormat("#,##0", "en_US");
 
 class MyDetails extends StatefulWidget {
   const MyDetails({Key? key}) : super(key: key);
-  static final nameRoute = '/details';
+  static const nameRoute = '/details';
 
   @override
   State<StatefulWidget> createState() {
@@ -32,6 +32,13 @@ class _MyDetails extends State<MyDetails> {
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, MyCart.nameRoute);
+              },
+              icon: const Icon(Icons.shopping_cart))
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
@@ -39,59 +46,57 @@ class _MyDetails extends State<MyDetails> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Image.network(products.thumbnailUrl),
-            Container(
-              child: Column(
-                children: [
-                  Text(
-                    products.name,
-                    style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      RatingBar.builder(
-                        itemSize: 20,
-                        initialRating: products.ratingAverage,
-                        direction: Axis.horizontal,
-                        ignoreGestures: true,
-                        allowHalfRating: true,
-                        itemCount: 5,
-                        itemBuilder: (context, _) => const Icon(
-                          Icons.star,
-                          color: Colors.amber,
-                        ),
-                        onRatingUpdate: (rating) {},
+            Column(
+              children: [
+                Text(
+                  products.name,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    RatingBar.builder(
+                      itemSize: 20,
+                      initialRating: products.ratingAverage,
+                      direction: Axis.horizontal,
+                      ignoreGestures: true,
+                      allowHalfRating: true,
+                      itemCount: 5,
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
                       ),
-                      Text(
-                        '(${products.reviewCount})  ${products.quantitySold?.value == null ? '' : '| ${products.quantitySold!.text}'}',
-                        overflow: TextOverflow.ellipsis,
+                      onRatingUpdate: (rating) {},
+                    ),
+                    Text(
+                      '(${products.reviewCount})  ${products.quantitySold?.value == null ? '' : '| ${products.quantitySold!.text}'}',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    IconButton(onPressed: () {}, icon: const Icon(Icons.add_link)),
+                    IconButton(onPressed: () {}, icon: const Icon(Icons.share_outlined)),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Text(
+                      '${oCcy.format(products.price)}đ ',
+                      style: const TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
                       ),
-                      IconButton(onPressed: () {}, icon: Icon(Icons.add_link)),
-                      IconButton(onPressed: () {}, icon: Icon(Icons.share_outlined)),
-                    ],
-                  ),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        '${oCcy.format(products.price)}đ ',
-                        style: const TextStyle(
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                        ),
-                      ),
-                      Text(
-                        '${products.originalPrice.toString()}đ ',
-                        style: TextStyle(
-                            color: Colors.black45,
-                            decoration: TextDecoration.lineThrough),
-                      ),
-                      discount_rate(products),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    Text(
+                      '${oCcy.format(products.originalPrice)}đ',
+                      style: const TextStyle(
+                          color: Colors.black45, fontSize: 18,
+                          decoration: TextDecoration.lineThrough),
+                    ),
+                    const Spacer(),
+                    discount_rate(products),
+                  ],
+                ),
+              ],
             ),
             Container(
               margin: const EdgeInsets.all(5),
@@ -100,7 +105,7 @@ class _MyDetails extends State<MyDetails> {
               child: ElevatedButton(
                 onPressed: () {
                   Provider.of<CartProvider>(context, listen: false).addItemToCart(products.id, products.name, products.thumbnailUrl, products.price, products.originalPrice);
-                  Navigator.pushNamed(context, MyCart.nameRoute);
+                  Navigator.popAndPushNamed(context, MyCart.nameRoute);
                 },
                 child: const Text(
                   'Chọn mua',
@@ -118,8 +123,8 @@ class _MyDetails extends State<MyDetails> {
   Widget discount_rate(Product products) {
     if (products.discountRate > 0) {
       return Container(
-        width: 40,
-        height: 20,
+        width: 50,
+        height: 30,
         decoration: BoxDecoration(
           border: Border.all(color: Colors.red),
           borderRadius: const BorderRadius.all(Radius.circular(5)),
@@ -127,12 +132,13 @@ class _MyDetails extends State<MyDetails> {
         ),
         child: Center(
           child: Text(
-            products.discountRate <= 0 ? '' : '-${products.discountRate}%',
-            style: TextStyle(color: Colors.red),
+            '-${products.discountRate}%',
+            style: const TextStyle(color: Colors.red,fontSize: 18),
           ),
         ),
       );
-    } else
+    } else {
       return Container();
+    }
   }
 }

@@ -8,6 +8,7 @@ class CartItem {
   final int price;
   final int originalPrice;
   late int quantity;
+  late bool ischecked;
 
   CartItem({
     required this.id,
@@ -16,6 +17,7 @@ class CartItem {
     required this.price,
     required this.originalPrice,
     required final this.quantity,
+    required this.ischecked,
   });
 
   Map<String, dynamic> toJson() {
@@ -28,16 +30,30 @@ class CartItem {
 
 class CartProvider extends ChangeNotifier {
   final List<CartItem> _cartList = [];
+  late bool _allischecked = true;
+
+  List<CartItem> get cartList => _cartList;
+
+  bool get allischecked => _allischecked;
+
+  set allischecked(bool value) {
+    _allischecked = value;
+    notifyListeners();
+  }
+
+  checkitem(CartItem item, value) {
+    item.ischecked = value;
+    notifyListeners();
+  }
 
   myCartCount() {
     int count = 0;
-    for (var item in _cartList) {
+    for (var item in _cartList.where((p) => p.ischecked == true).toList()) {
       count += item.quantity;
+      print(item.name);
     }
     return count;
   }
-
-  List<CartItem> get cartList => _cartList;
 
   clearCart() {
     _cartList.clear();
@@ -67,7 +83,8 @@ class CartProvider extends ChangeNotifier {
           thumbnailUrl: thumbnailUrl,
           price: price,
           originalPrice: originalPrice,
-          quantity: 1));
+          quantity: 1,
+          ischecked: true));
       print('add $name');
     }
     notifyListeners();
@@ -75,7 +92,7 @@ class CartProvider extends ChangeNotifier {
 
   getCartTotal() {
     double price = 0;
-    for (var item in _cartList) {
+    for (var item in cartList.where((p) => p.ischecked == true).toList()) {
       price += item.quantity * item.price;
     }
     return price;
@@ -83,8 +100,8 @@ class CartProvider extends ChangeNotifier {
 
   void sub(CartItem item) {
     item.quantity--;
-    if (item.quantity < 0) {
-      item.quantity = 0;
+    if (item.quantity < 1) {
+      item.quantity = 1;
     }
     notifyListeners();
   }

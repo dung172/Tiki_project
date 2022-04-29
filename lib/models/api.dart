@@ -4,7 +4,6 @@ import 'package:tiki_project/models/Cart_provider.dart';
 import 'package:tiki_project/models/product.dart';
 import 'package:intl/intl.dart';
 
-
 class ApiCall {
   Future<List<Product>> getAllProducts() async {
     var response =
@@ -39,7 +38,6 @@ class ApiCall {
           .decode(response.body)
           .map<Product>((item) => Product.fromJson(item))
           .toList();
-      // print('productList: $productList');
       return productList;
     } else {
       throw Exception(
