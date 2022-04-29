@@ -118,7 +118,7 @@ class _CartDetails extends State<CartDetails> {
             },
             value: _cartProvider.allischecked,
           ),
-          title: Text('Tất cả (${_cartProvider.cartList.length}) sản phẩm'),
+          title: Text('Tất cả (${_cartProvider.cartList.where((element) => element.ischecked == true).length}) sản phẩm'),
           trailing: IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
